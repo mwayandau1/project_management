@@ -16,7 +16,7 @@ public interface ProjectService {
 
     void deleteProject(Long projectId, Long userId) throws Exception;
 
-    Project updateProject(Project project, Long userId) throws Exception;
+    Project updateProject(Project updatedProject, Long id) throws Exception;
 
 
     void addUserToProject(Long projectId, Long userId) throws Exception;
@@ -24,4 +24,6 @@ public interface ProjectService {
     void removeUserFromProject(Long projectId, Long userId) throws Exception;
 
     Chat getChatProjectId(Long projectId) throws Exception;
+
+    List<Project> searchedProjects(String keyword, User user) throws Exception;
 }
