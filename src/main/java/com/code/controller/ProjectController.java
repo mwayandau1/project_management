@@ -1,9 +1,13 @@
 package com.code.controller;
 
 
+import com.code.model.Chat;
+import com.code.model.Invitation;
 import com.code.model.Project;
 import com.code.model.User;
+import com.code.request.InvitationRequest;
 import com.code.response.MessageResponse;
+import com.code.service.InvitationService;
 import com.code.service.ProjectService;
 import com.code.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,9 @@ public class ProjectController {
     @Autowired
     private UserService userService;
 
+
+    @Autowired
+    private InvitationService invitationService;
 
     @GetMapping
     public ResponseEntity<List<Project>> getAllProjects(@RequestParam(required = false) String category,
@@ -74,9 +81,40 @@ public class ProjectController {
 
     }
 
+    @GetMapping("/search")
     public ResponseEntity<List<Project>> searchProject(@RequestParam String keyword, @RequestHeader("Authorization") String jwt) throws Exception{
         User user = userService.findUserProfileByJwt(jwt);
         List<Project> projects = projectService.searchedProjects(keyword,user );
         return  new ResponseEntity<>(projects, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/{projectId}/chat")
+    public ResponseEntity<Chat> getChatByProjectId(@PathVariable Long projectId, @RequestHeader("Authorization") String jwt) throws Exception{
+        userService.findUserProfileByJwt(jwt);
+
+        Chat chat = projectService.getChatProjectId(projectId);
+        return  new ResponseEntity<>(chat, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/invitation")
+    ResponseEntity<MessageResponse> projectInvitation(
+            @RequestBody InvitationRequest request,
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        userService.findUserProfileByJwt(jwt);
+        invitationService.sendInvitation(request.getEmail(), request.getProjectId());
+        MessageResponse response = new MessageResponse("Sent invitation successful!");
+        return  new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/accept_invitation")
+    ResponseEntity<Invitation> acceptInvitation(@RequestParam String token, @RequestHeader("Authorization") String jwt ) throws Exception {
+        User user = userService.findUserProfileByJwt(jwt);
+        Invitation invitation = invitationService.acceptInvitation(token, user.getId());
+        projectService.addUserToProject(invitation.getProjectId(), user.getId());
+
+        return  new ResponseEntity<>(invitation, HttpStatus.ACCEPTED);
     }
 }
