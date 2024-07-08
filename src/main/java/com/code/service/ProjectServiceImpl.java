@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class ProjectServiceImpl implements ProjectService{
+public class ProjectServiceImpl implements ProjectService {
 
 
     @Autowired
-    private  ProjectRepository projectRepository;
+    private ProjectRepository projectRepository;
 
     @Autowired
     private UserService userService;
@@ -44,7 +44,7 @@ public class ProjectServiceImpl implements ProjectService{
         Chat projectChat = chatService.createChat(chat);
         savedProject.setChat(projectChat);
 
-        return savedProject ;
+        return savedProject;
     }
 
     @Override
@@ -52,11 +52,11 @@ public class ProjectServiceImpl implements ProjectService{
 
         List<Project> projects = projectRepository.findByTeamContainingOrOwner(user, user);
 
-        if(category != null){
+        if (category != null) {
             projects = projects.stream().filter(project -> project.getCategory().equals(category)).toList();
         }
 
-        if(tags != null){
+        if (tags != null) {
             projects = projects.stream().filter(project -> project.getTags().contains(tags)).toList();
         }
 
@@ -67,7 +67,7 @@ public class ProjectServiceImpl implements ProjectService{
     public Project getProjectById(Long projectId) throws Exception {
 
         Optional<Project> optionalProject = projectRepository.findById(projectId);
-        if(optionalProject.isEmpty()){
+        if (optionalProject.isEmpty()) {
             throw new Exception("No project found with the id");
         }
         return optionalProject.get();
@@ -87,16 +87,16 @@ public class ProjectServiceImpl implements ProjectService{
     public Project updateProject(Project updatedProject, Long id) throws Exception {
 
         Project project = getProjectById(id);
-        if(updatedProject.getName() != null){
+        if (updatedProject.getName() != null) {
             project.setName(updatedProject.getName());
         }
-        if(updatedProject.getName() != null){
+        if (updatedProject.getName() != null) {
             project.setName(updatedProject.getName());
         }
-        if(updatedProject.getDescription() != null){
+        if (updatedProject.getDescription() != null) {
             project.setDescription(updatedProject.getDescription());
         }
-        if(updatedProject.getTags() != null){
+        if (updatedProject.getTags() != null) {
             project.setTags(updatedProject.getTags());
         }
 
@@ -109,12 +109,12 @@ public class ProjectServiceImpl implements ProjectService{
         Project project = getProjectById(projectId);
         User user = userService.findUserById(userId);
 
-        if(!project.getTeam().contains(user)){
+        if (!project.getTeam().contains(user)) {
             project.getChat().getUsers().add(user);
             project.getTeam().add(user);
 
         }
-    projectRepository.save(project);
+        projectRepository.save(project);
 
     }
 
@@ -124,11 +124,11 @@ public class ProjectServiceImpl implements ProjectService{
         Project project = getProjectById(projectId);
 
         User user = userService.findUserById(userId);
-        if(project.getTeam().contains(user)){
+        if (project.getTeam().contains(user)) {
             project.getChat().getUsers().remove(user);
             project.getTeam().remove(user);
         }
-     projectRepository.save(project);
+        projectRepository.save(project);
     }
 
     @Override
