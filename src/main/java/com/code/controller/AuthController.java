@@ -7,6 +7,7 @@ import com.code.repository.UserRepository;
 import com.code.request.LoginRequest;
 import com.code.response.AuthResponse;
 import com.code.service.CustomUserDetailsImpl;
+import com.code.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,10 @@ public class AuthController {
     @Autowired
     CustomUserDetailsImpl customUserDetails;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
+
 
     @PostMapping("/register")
     ResponseEntity<AuthResponse> createUser(@RequestBody User user) throws Exception {
@@ -47,6 +52,8 @@ public class AuthController {
 
 
         User savedUer = userRepository.save(newUser);
+
+        subscriptionService.createSubscription(savedUer);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
